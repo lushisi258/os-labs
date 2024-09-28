@@ -30,7 +30,7 @@ CC		:= $(GCCPREFIX)gcc
 CFLAGS  := -mcmodel=medany -std=gnu99 -Wno-unused -Werror
 CFLAGS	+= -fno-builtin -Wall -O2 -nostdinc $(DEFS)
 CFLAGS	+= -fno-stack-protector -ffunction-sections -fdata-sections
-CFLAGS	+= -g
+CFLAGS	+= -g  # 支持gdb调试
 CTYPE	:= c S
 
 LD      := $(GCCPREFIX)ld
