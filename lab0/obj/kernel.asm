@@ -25,11 +25,11 @@ int kern_init(void) {
     extern char edata[], end[];
     memset(edata, 0, end - edata);
     8020000a:	00003517          	auipc	a0,0x3
-    8020000e:	ffe50513          	add	a0,a0,-2 # 80203008 <edata>
+    8020000e:	ffe50513          	addi	a0,a0,-2 # 80203008 <edata>
     80200012:	00003617          	auipc	a2,0x3
-    80200016:	ff660613          	add	a2,a2,-10 # 80203008 <edata>
+    80200016:	ff660613          	addi	a2,a2,-10 # 80203008 <edata>
 int kern_init(void) {
-    8020001a:	1141                	add	sp,sp,-16 # 80202ff0 <bootstack+0x1ff0>
+    8020001a:	1141                	addi	sp,sp,-16 # 80202ff0 <bootstack+0x1ff0>
     memset(edata, 0, end - edata);
     8020001c:	4581                	li	a1,0
     8020001e:	8e09                	sub	a2,a2,a0
@@ -41,9 +41,9 @@ int kern_init(void) {
     const char *message = "(THU.CST) os is loading ...\n";
     cprintf("%s\n\n", message);
     80200026:	00000597          	auipc	a1,0x0
-    8020002a:	4a258593          	add	a1,a1,1186 # 802004c8 <memset+0x16>
+    8020002a:	4a258593          	addi	a1,a1,1186 # 802004c8 <memset+0x16>
     8020002e:	00000517          	auipc	a0,0x0
-    80200032:	4ba50513          	add	a0,a0,1210 # 802004e8 <memset+0x36>
+    80200032:	4ba50513          	addi	a0,a0,1210 # 802004e8 <memset+0x36>
     80200036:	020000ef          	jal	80200056 <cprintf>
    while (1)
     8020003a:	a001                	j	8020003a <kern_init+0x30>
@@ -55,7 +55,7 @@ int kern_init(void) {
  * increace the value of counter pointed by @cnt.
  * */
 static void cputch(int c, int *cnt) {
-    8020003c:	1141                	add	sp,sp,-16
+    8020003c:	1141                	addi	sp,sp,-16
     8020003e:	e022                	sd	s0,0(sp)
     80200040:	e406                	sd	ra,8(sp)
     80200042:	842e                	mv	s0,a1
@@ -66,11 +66,11 @@ static void cputch(int c, int *cnt) {
 }
     8020004a:	60a2                	ld	ra,8(sp)
     (*cnt)++;
-    8020004c:	2785                	addw	a5,a5,1
+    8020004c:	2785                	addiw	a5,a5,1
     8020004e:	c01c                	sw	a5,0(s0)
 }
     80200050:	6402                	ld	s0,0(sp)
-    80200052:	0141                	add	sp,sp,16
+    80200052:	0141                	addi	sp,sp,16
     80200054:	8082                	ret
 
 0000000080200056 <cprintf>:
@@ -80,11 +80,11 @@ static void cputch(int c, int *cnt) {
  * written to stdout.
  * */
 int cprintf(const char *fmt, ...) {
-    80200056:	711d                	add	sp,sp,-96
+    80200056:	711d                	addi	sp,sp,-96
     va_list ap;
     int cnt;
     va_start(ap, fmt);
-    80200058:	02810313          	add	t1,sp,40
+    80200058:	02810313          	addi	t1,sp,40
 int cprintf(const char *fmt, ...) {
     8020005c:	8e2a                	mv	t3,a0
     8020005e:	f42e                	sd	a1,40(sp)
@@ -92,8 +92,8 @@ int cprintf(const char *fmt, ...) {
     80200062:	fc36                	sd	a3,56(sp)
     vprintfmt((void *)cputch, &cnt, fmt, ap);
     80200064:	00000517          	auipc	a0,0x0
-    80200068:	fd850513          	add	a0,a0,-40 # 8020003c <cputch>
-    8020006c:	004c                	add	a1,sp,4
+    80200068:	fd850513          	addi	a0,a0,-40 # 8020003c <cputch>
+    8020006c:	004c                	addi	a1,sp,4
     8020006e:	869a                	mv	a3,t1
     80200070:	8672                	mv	a2,t3
 int cprintf(const char *fmt, ...) {
@@ -114,7 +114,7 @@ int cprintf(const char *fmt, ...) {
 }
     80200084:	60e2                	ld	ra,24(sp)
     80200086:	4512                	lw	a0,4(sp)
-    80200088:	6125                	add	sp,sp,96
+    80200088:	6125                	addi	sp,sp,96
     8020008a:	8082                	ret
 
 000000008020008c <cons_putc>:
@@ -134,11 +134,11 @@ printnum(void (*putch)(int, void*), void *putdat,
         unsigned long long num, unsigned base, int width, int padc) {
     unsigned long long result = num;
     unsigned mod = do_div(result, base);
-    80200092:	02069813          	sll	a6,a3,0x20
+    80200092:	02069813          	slli	a6,a3,0x20
         unsigned long long num, unsigned base, int width, int padc) {
-    80200096:	7179                	add	sp,sp,-48
+    80200096:	7179                	addi	sp,sp,-48
     unsigned mod = do_div(result, base);
-    80200098:	02085813          	srl	a6,a6,0x20
+    80200098:	02085813          	srli	a6,a6,0x20
         unsigned long long num, unsigned base, int width, int padc) {
     8020009c:	e052                	sd	s4,0(sp)
     unsigned mod = do_div(result, base);
@@ -157,7 +157,7 @@ printnum(void (*putch)(int, void*), void *putdat,
     } else {
         // print any needed pad characters before first digit
         while (-- width > 0)
-    802000b0:	fff7041b          	addw	s0,a4,-1
+    802000b0:	fff7041b          	addiw	s0,a4,-1
     unsigned mod = do_div(result, base);
     802000b4:	2a01                	sext.w	s4,s4
     if (num >= base) {
@@ -166,7 +166,7 @@ printnum(void (*putch)(int, void*), void *putdat,
         while (-- width > 0)
     802000bc:	4785                	li	a5,1
     802000be:	00e7d763          	bge	a5,a4,802000cc <printnum+0x3a>
-    802000c2:	347d                	addw	s0,s0,-1
+    802000c2:	347d                	addiw	s0,s0,-1
             putch(padc, putdat);
     802000c4:	85ca                	mv	a1,s2
     802000c6:	854e                	mv	a0,s3
@@ -176,10 +176,10 @@ printnum(void (*putch)(int, void*), void *putdat,
     }
     // then print this (the least significant) digit
     putch("0123456789abcdef"[mod], putdat);
-    802000cc:	1a02                	sll	s4,s4,0x20
-    802000ce:	020a5a13          	srl	s4,s4,0x20
+    802000cc:	1a02                	slli	s4,s4,0x20
+    802000ce:	020a5a13          	srli	s4,s4,0x20
     802000d2:	00000797          	auipc	a5,0x0
-    802000d6:	41e78793          	add	a5,a5,1054 # 802004f0 <memset+0x3e>
+    802000d6:	41e78793          	addi	a5,a5,1054 # 802004f0 <memset+0x3e>
     802000da:	97d2                	add	a5,a5,s4
 }
     802000dc:	7402                	ld	s0,32(sp)
@@ -195,7 +195,7 @@ printnum(void (*putch)(int, void*), void *putdat,
 }
     802000ec:	6942                	ld	s2,16(sp)
     802000ee:	64e2                	ld	s1,24(sp)
-    802000f0:	6145                	add	sp,sp,48
+    802000f0:	6145                	addi	sp,sp,48
     putch("0123456789abcdef"[mod], putdat);
     802000f2:	8782                	jr	a5
         printnum(putch, putdat, result, base, width - 1, padc);
@@ -211,7 +211,7 @@ printnum(void (*putch)(int, void*), void *putdat,
  * */
 void
 vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) {
-    80200100:	7119                	add	sp,sp,-128
+    80200100:	7119                	addi	sp,sp,-128
     80200102:	f4a6                	sd	s1,104(sp)
     80200104:	f0ca                	sd	s2,96(sp)
     80200106:	ecce                	sd	s3,88(sp)
@@ -244,17 +244,17 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) 
         switch (ch = *(unsigned char *)fmt ++) {
     80200128:	05500b13          	li	s6,85
     8020012c:	00000a97          	auipc	s5,0x0
-    80200130:	3f8a8a93          	add	s5,s5,1016 # 80200524 <memset+0x72>
+    80200130:	478a8a93          	addi	s5,s5,1144 # 802005a4 <memset+0xf2>
         while ((ch = *(unsigned char *)fmt ++) != '%') {
     80200134:	000c4503          	lbu	a0,0(s8)
-    80200138:	001c0413          	add	s0,s8,1
+    80200138:	001c0413          	addi	s0,s8,1
     8020013c:	01350a63          	beq	a0,s3,80200150 <vprintfmt+0x50>
             if (ch == '\0') {
     80200140:	cd0d                	beqz	a0,8020017a <vprintfmt+0x7a>
             putch(ch, putdat);
     80200142:	85a6                	mv	a1,s1
         while ((ch = *(unsigned char *)fmt ++) != '%') {
-    80200144:	0405                	add	s0,s0,1
+    80200144:	0405                	addi	s0,s0,1
             putch(ch, putdat);
     80200146:	9902                	jalr	s2
         while ((ch = *(unsigned char *)fmt ++) != '%') {
@@ -270,11 +270,11 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) 
     8020015a:	5cfd                	li	s9,-1
         switch (ch = *(unsigned char *)fmt ++) {
     8020015c:	00044683          	lbu	a3,0(s0)
-    80200160:	00140c13          	add	s8,s0,1
-    80200164:	fdd6859b          	addw	a1,a3,-35
+    80200160:	00140c13          	addi	s8,s0,1
+    80200164:	fdd6859b          	addiw	a1,a3,-35
     80200168:	0ff5f593          	zext.b	a1,a1
     8020016c:	02bb6663          	bltu	s6,a1,80200198 <vprintfmt+0x98>
-    80200170:	058a                	sll	a1,a1,0x2
+    80200170:	058a                	slli	a1,a1,0x2
     80200172:	95d6                	add	a1,a1,s5
     80200174:	4198                	lw	a4,0(a1)
     80200176:	9756                	add	a4,a4,s5
@@ -298,7 +298,7 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) 
     8020018e:	7ca2                	ld	s9,40(sp)
     80200190:	7d02                	ld	s10,32(sp)
     80200192:	6de2                	ld	s11,24(sp)
-    80200194:	6109                	add	sp,sp,128
+    80200194:	6109                	addi	sp,sp,128
     80200196:	8082                	ret
             putch('%', putdat);
     80200198:	85a6                	mv	a1,s1
@@ -311,7 +311,7 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) 
     802001aa:	f8f705e3          	beq	a4,a5,80200134 <vprintfmt+0x34>
     802001ae:	02500713          	li	a4,37
     802001b2:	ffec4783          	lbu	a5,-2(s8)
-    802001b6:	1c7d                	add	s8,s8,-1
+    802001b6:	1c7d                	addi	s8,s8,-1
     802001b8:	fee79de3          	bne	a5,a4,802001b2 <vprintfmt+0xb2>
     802001bc:	bfa5                	j	80200134 <vprintfmt+0x34>
                 ch = *fmt;
@@ -319,9 +319,9 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) 
                 if (ch < '0' || ch > '9') {
     802001c2:	4725                	li	a4,9
                 precision = precision * 10 + ch - '0';
-    802001c4:	fd068d1b          	addw	s10,a3,-48
+    802001c4:	fd068d1b          	addiw	s10,a3,-48
                 if (ch < '0' || ch > '9') {
-    802001c8:	fd07859b          	addw	a1,a5,-48
+    802001c8:	fd07859b          	addiw	a1,a5,-48
                 ch = *fmt;
     802001cc:	0007869b          	sext.w	a3,a5
         switch (ch = *(unsigned char *)fmt ++) {
@@ -332,16 +332,16 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) 
                 ch = *fmt;
     802001d8:	00144783          	lbu	a5,1(s0)
                 precision = precision * 10 + ch - '0';
-    802001dc:	002d171b          	sllw	a4,s10,0x2
+    802001dc:	002d171b          	slliw	a4,s10,0x2
     802001e0:	01a7073b          	addw	a4,a4,s10
-    802001e4:	0017171b          	sllw	a4,a4,0x1
+    802001e4:	0017171b          	slliw	a4,a4,0x1
     802001e8:	9f35                	addw	a4,a4,a3
                 if (ch < '0' || ch > '9') {
-    802001ea:	fd07859b          	addw	a1,a5,-48
+    802001ea:	fd07859b          	addiw	a1,a5,-48
             for (precision = 0; ; ++ fmt) {
-    802001ee:	0405                	add	s0,s0,1
+    802001ee:	0405                	addi	s0,s0,1
                 precision = precision * 10 + ch - '0';
-    802001f0:	fd070d1b          	addw	s10,a4,-48
+    802001f0:	fd070d1b          	addiw	s10,a4,-48
                 ch = *fmt;
     802001f4:	0007869b          	sext.w	a3,a5
                 if (ch < '0' || ch > '9') {
@@ -364,7 +364,7 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) 
     if (lflag >= 2) {
     80200212:	4785                	li	a5,1
             precision = va_arg(ap, int);
-    80200214:	008a0713          	add	a4,s4,8
+    80200214:	008a0713          	addi	a4,s4,8
     if (lflag >= 2) {
     80200218:	00c7c463          	blt	a5,a2,80200220 <vprintfmt+0x120>
     else if (lflag) {
@@ -384,14 +384,14 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) 
             putch(va_arg(ap, int), putdat);
     80200238:	000a2503          	lw	a0,0(s4)
     8020023c:	85a6                	mv	a1,s1
-    8020023e:	0a21                	add	s4,s4,8
+    8020023e:	0a21                	addi	s4,s4,8
     80200240:	9902                	jalr	s2
             break;
     80200242:	bdcd                	j	80200134 <vprintfmt+0x34>
     if (lflag >= 2) {
     80200244:	4785                	li	a5,1
             precision = va_arg(ap, int);
-    80200246:	008a0713          	add	a4,s4,8
+    80200246:	008a0713          	addi	a4,s4,8
     if (lflag >= 2) {
     8020024a:	00c7c463          	blt	a5,a2,80200252 <vprintfmt+0x152>
     else if (lflag) {
@@ -410,7 +410,7 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) 
     80200266:	07800513          	li	a0,120
     8020026a:	9902                	jalr	s2
             num = (unsigned long long)va_arg(ap, void *);
-    8020026c:	0a21                	add	s4,s4,8
+    8020026c:	0a21                	addi	s4,s4,8
             goto number;
     8020026e:	46c1                	li	a3,16
             num = (unsigned long long)va_arg(ap, void *);
@@ -428,13 +428,13 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) 
         switch (ch = *(unsigned char *)fmt ++) {
     80200284:	8462                	mv	s0,s8
             precision = va_arg(ap, int);
-    80200286:	0a21                	add	s4,s4,8
+    80200286:	0a21                	addi	s4,s4,8
             goto process_precision;
     80200288:	bf95                	j	802001fc <vprintfmt+0xfc>
     if (lflag >= 2) {
     8020028a:	4785                	li	a5,1
             precision = va_arg(ap, int);
-    8020028c:	008a0713          	add	a4,s4,8
+    8020028c:	008a0713          	addi	a4,s4,8
     if (lflag >= 2) {
     80200290:	00c7c463          	blt	a5,a2,80200298 <vprintfmt+0x198>
     else if (lflag) {
@@ -446,7 +446,7 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) 
     802002a0:	b761                	j	80200228 <vprintfmt+0x128>
             if (width < 0)
     802002a2:	fffcc793          	not	a5,s9
-    802002a6:	97fd                	sra	a5,a5,0x3f
+    802002a6:	97fd                	srai	a5,a5,0x3f
     802002a8:	00fcf7b3          	and	a5,s9,a5
     802002ac:	00078c9b          	sext.w	s9,a5
         switch (ch = *(unsigned char *)fmt ++) {
@@ -455,14 +455,14 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) 
     802002b2:	b56d                	j	8020015c <vprintfmt+0x5c>
             if ((p = va_arg(ap, char *)) == NULL) {
     802002b4:	000a3403          	ld	s0,0(s4)
-    802002b8:	008a0793          	add	a5,s4,8
+    802002b8:	008a0793          	addi	a5,s4,8
     802002bc:	e43e                	sd	a5,8(sp)
     802002be:	12040163          	beqz	s0,802003e0 <vprintfmt+0x2e0>
             if (width > 0 && padc != '-') {
     802002c2:	0d905963          	blez	s9,80200394 <vprintfmt+0x294>
     802002c6:	02d00793          	li	a5,45
             for (; (ch = *p ++) != '\0' && (precision < 0 || -- precision >= 0); width --) {
-    802002ca:	00140a13          	add	s4,s0,1
+    802002ca:	00140a13          	addi	s4,s0,1
             if (width > 0 && padc != '-') {
     802002ce:	12fd9863          	bne	s11,a5,802003fe <vprintfmt+0x2fe>
             for (; (ch = *p ++) != '\0' && (precision < 0 || -- precision >= 0); width --) {
@@ -474,26 +474,26 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) 
     802002de:	05e00d93          	li	s11,94
             for (; (ch = *p ++) != '\0' && (precision < 0 || -- precision >= 0); width --) {
     802002e2:	000d4563          	bltz	s10,802002ec <vprintfmt+0x1ec>
-    802002e6:	3d7d                	addw	s10,s10,-1
+    802002e6:	3d7d                	addiw	s10,s10,-1
     802002e8:	028d0263          	beq	s10,s0,8020030c <vprintfmt+0x20c>
                     putch('?', putdat);
     802002ec:	85a6                	mv	a1,s1
                 if (altflag && (ch < ' ' || ch > '~')) {
     802002ee:	0c0b8e63          	beqz	s7,802003ca <vprintfmt+0x2ca>
-    802002f2:	3781                	addw	a5,a5,-32
+    802002f2:	3781                	addiw	a5,a5,-32
     802002f4:	0cfdfb63          	bgeu	s11,a5,802003ca <vprintfmt+0x2ca>
                     putch('?', putdat);
     802002f8:	03f00513          	li	a0,63
     802002fc:	9902                	jalr	s2
             for (; (ch = *p ++) != '\0' && (precision < 0 || -- precision >= 0); width --) {
     802002fe:	000a4783          	lbu	a5,0(s4)
-    80200302:	3cfd                	addw	s9,s9,-1
-    80200304:	0a05                	add	s4,s4,1
+    80200302:	3cfd                	addiw	s9,s9,-1
+    80200304:	0a05                	addi	s4,s4,1
     80200306:	0007851b          	sext.w	a0,a5
     8020030a:	ffe1                	bnez	a5,802002e2 <vprintfmt+0x1e2>
             for (; width > 0; width --) {
     8020030c:	01905963          	blez	s9,8020031e <vprintfmt+0x21e>
-    80200310:	3cfd                	addw	s9,s9,-1
+    80200310:	3cfd                	addiw	s9,s9,-1
                 putch(' ', putdat);
     80200312:	85a6                	mv	a1,s1
     80200314:	02000513          	li	a0,32
@@ -506,7 +506,7 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) 
     if (lflag >= 2) {
     80200322:	4785                	li	a5,1
             precision = va_arg(ap, int);
-    80200324:	008a0b93          	add	s7,s4,8
+    80200324:	008a0b93          	addi	s7,s4,8
     if (lflag >= 2) {
     80200328:	00c7c363          	blt	a5,a2,8020032e <vprintfmt+0x22e>
     else if (lflag) {
@@ -525,45 +525,45 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) 
             if (err > MAXERROR || (p = error_string[err]) == NULL) {
     80200342:	4619                	li	a2,6
             if (err < 0) {
-    80200344:	41f7d71b          	sraw	a4,a5,0x1f
+    80200344:	41f7d71b          	sraiw	a4,a5,0x1f
     80200348:	8fb9                	xor	a5,a5,a4
     8020034a:	40e786bb          	subw	a3,a5,a4
             if (err > MAXERROR || (p = error_string[err]) == NULL) {
     8020034e:	02d64663          	blt	a2,a3,8020037a <vprintfmt+0x27a>
-    80200352:	00369713          	sll	a4,a3,0x3
+    80200352:	00369713          	slli	a4,a3,0x3
     80200356:	00000797          	auipc	a5,0x0
-    8020035a:	3aa78793          	add	a5,a5,938 # 80200700 <error_string>
+    8020035a:	3aa78793          	addi	a5,a5,938 # 80200700 <error_string>
     8020035e:	97ba                	add	a5,a5,a4
     80200360:	639c                	ld	a5,0(a5)
     80200362:	cf81                	beqz	a5,8020037a <vprintfmt+0x27a>
                 printfmt(putch, putdat, "%s", p);
     80200364:	86be                	mv	a3,a5
     80200366:	00000617          	auipc	a2,0x0
-    8020036a:	1ba60613          	add	a2,a2,442 # 80200520 <memset+0x6e>
+    8020036a:	1ba60613          	addi	a2,a2,442 # 80200520 <memset+0x6e>
     8020036e:	85a6                	mv	a1,s1
     80200370:	854a                	mv	a0,s2
     80200372:	0ea000ef          	jal	8020045c <printfmt>
             err = va_arg(ap, int);
-    80200376:	0a21                	add	s4,s4,8
+    80200376:	0a21                	addi	s4,s4,8
     80200378:	bb75                	j	80200134 <vprintfmt+0x34>
                 printfmt(putch, putdat, "error %d", err);
     8020037a:	00000617          	auipc	a2,0x0
-    8020037e:	19660613          	add	a2,a2,406 # 80200510 <memset+0x5e>
+    8020037e:	19660613          	addi	a2,a2,406 # 80200510 <memset+0x5e>
     80200382:	85a6                	mv	a1,s1
     80200384:	854a                	mv	a0,s2
     80200386:	0d6000ef          	jal	8020045c <printfmt>
             err = va_arg(ap, int);
-    8020038a:	0a21                	add	s4,s4,8
+    8020038a:	0a21                	addi	s4,s4,8
     8020038c:	b365                	j	80200134 <vprintfmt+0x34>
             lflag ++;
-    8020038e:	2605                	addw	a2,a2,1
+    8020038e:	2605                	addiw	a2,a2,1
         switch (ch = *(unsigned char *)fmt ++) {
     80200390:	8462                	mv	s0,s8
             goto reswitch;
     80200392:	b3e9                	j	8020015c <vprintfmt+0x5c>
             for (; (ch = *p ++) != '\0' && (precision < 0 || -- precision >= 0); width --) {
     80200394:	00044783          	lbu	a5,0(s0)
-    80200398:	00140a13          	add	s4,s0,1
+    80200398:	00140a13          	addi	s4,s0,1
     8020039c:	0007851b          	sext.w	a0,a5
     802003a0:	ff95                	bnez	a5,802002dc <vprintfmt+0x1dc>
             if ((p = va_arg(ap, char *)) == NULL) {
@@ -603,7 +603,7 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) 
     802003e8:	04fd9263          	bne	s11,a5,8020042c <vprintfmt+0x32c>
             for (; (ch = *p ++) != '\0' && (precision < 0 || -- precision >= 0); width --) {
     802003ec:	00000a17          	auipc	s4,0x0
-    802003f0:	11da0a13          	add	s4,s4,285 # 80200509 <memset+0x57>
+    802003f0:	11da0a13          	addi	s4,s4,285 # 80200509 <memset+0x57>
     802003f4:	02800513          	li	a0,40
     802003f8:	02800793          	li	a5,40
     802003fc:	b5c5                	j	802002dc <vprintfmt+0x1dc>
@@ -616,7 +616,7 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) 
                     putch(padc, putdat);
     8020040e:	2d81                	sext.w	s11,s11
                 for (width -= strnlen(p, precision); width > 0; width --) {
-    80200410:	3cfd                	addw	s9,s9,-1
+    80200410:	3cfd                	addiw	s9,s9,-1
                     putch(padc, putdat);
     80200412:	85a6                	mv	a1,s1
     80200414:	856e                	mv	a0,s11
@@ -633,15 +633,15 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) 
                 for (width -= strnlen(p, precision); width > 0; width --) {
     8020042c:	85ea                	mv	a1,s10
     8020042e:	00000517          	auipc	a0,0x0
-    80200432:	0da50513          	add	a0,a0,218 # 80200508 <memset+0x56>
+    80200432:	0da50513          	addi	a0,a0,218 # 80200508 <memset+0x56>
     80200436:	060000ef          	jal	80200496 <strnlen>
     8020043a:	40ac8cbb          	subw	s9,s9,a0
             for (; (ch = *p ++) != '\0' && (precision < 0 || -- precision >= 0); width --) {
     8020043e:	00000a17          	auipc	s4,0x0
-    80200442:	0cba0a13          	add	s4,s4,203 # 80200509 <memset+0x57>
+    80200442:	0cba0a13          	addi	s4,s4,203 # 80200509 <memset+0x57>
                 p = "(null)";
     80200446:	00000417          	auipc	s0,0x0
-    8020044a:	0c240413          	add	s0,s0,194 # 80200508 <memset+0x56>
+    8020044a:	0c240413          	addi	s0,s0,194 # 80200508 <memset+0x56>
             for (; (ch = *p ++) != '\0' && (precision < 0 || -- precision >= 0); width --) {
     8020044e:	02800513          	li	a0,40
     80200452:	02800793          	li	a5,40
@@ -651,9 +651,9 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap) 
 
 000000008020045c <printfmt>:
 printfmt(void (*putch)(int, void*), void *putdat, const char *fmt, ...) {
-    8020045c:	715d                	add	sp,sp,-80
+    8020045c:	715d                	addi	sp,sp,-80
     va_start(ap, fmt);
-    8020045e:	02810313          	add	t1,sp,40
+    8020045e:	02810313          	addi	t1,sp,40
 printfmt(void (*putch)(int, void*), void *putdat, const char *fmt, ...) {
     80200462:	f436                	sd	a3,40(sp)
     vprintfmt(putch, putdat, fmt, ap);
@@ -670,7 +670,7 @@ printfmt(void (*putch)(int, void*), void *putdat, const char *fmt, ...) {
     80200472:	c8fff0ef          	jal	80200100 <vprintfmt>
 }
     80200476:	60e2                	ld	ra,24(sp)
-    80200478:	6161                	add	sp,sp,80
+    80200478:	6161                	addi	sp,sp,80
     8020047a:	8082                	ret
 
 000000008020047c <sbi_console_putchar>:
@@ -709,7 +709,7 @@ strnlen(const char *s, size_t len) {
     80200498:	e589                	bnez	a1,802004a2 <strnlen+0xc>
     8020049a:	a811                	j	802004ae <strnlen+0x18>
         cnt ++;
-    8020049c:	0785                	add	a5,a5,1
+    8020049c:	0785                	addi	a5,a5,1
     while (cnt < len && *s ++ != '\0') {
     8020049e:	00f58863          	beq	a1,a5,802004ae <strnlen+0x18>
     802004a2:	00f50733          	add	a4,a0,a5
@@ -734,7 +734,7 @@ memset(void *s, char c, size_t n) {
     char *p = s;
     802004b6:	87aa                	mv	a5,a0
         *p ++ = c;
-    802004b8:	0785                	add	a5,a5,1
+    802004b8:	0785                	addi	a5,a5,1
     802004ba:	feb78fa3          	sb	a1,-1(a5)
     while (n -- > 0) {
     802004be:	fec79de3          	bne	a5,a2,802004b8 <memset+0x6>
