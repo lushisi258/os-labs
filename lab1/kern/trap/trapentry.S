@@ -44,7 +44,9 @@
     csrrw s0, sscratch, x0
     csrr s1, sstatus
     csrr s2, sepc
-    csrr s3, sbadaddr
+    # LAB1 YOUR CODE:2213601
+    # change CSR name 'sbadaddr' to 'stval'
+    csrr s3, stval
     csrr s4, scause
 
     STORE s0, 2*REGBYTES(sp)
