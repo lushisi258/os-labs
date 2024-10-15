@@ -198,7 +198,7 @@ MAKEOPTS		:= --quiet --no-print-directory
 
 grade:
 	$(V)$(MAKE) $(MAKEOPTS) clean
-	$(V)$(SH) tools/grade-rv64-patch.sh
+	$(SH) tools/grade-rv64-patch.sh
 
 touch:
 	$(V)$(foreach f,$(TOUCH_FILES),$(TOUCH) $(f))

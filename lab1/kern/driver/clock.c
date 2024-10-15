@@ -1,8 +1,8 @@
 #include <clock.h>
 #include <defs.h>
+#include <riscv.h>
 #include <sbi.h>
 #include <stdio.h>
-#include <riscv.h>
 
 volatile size_t ticks;
 
@@ -13,17 +13,15 @@ static inline uint64_t get_cycles(void) {
     return n;
 #else
     uint32_t lo, hi, tmp;
-    __asm__ __volatile__(
-        "1:\n"
-        "rdtimeh %0\n"
-        "rdtime %1\n"
-        "rdtimeh %2\n"
-        "bne %0, %2, 1b"
-        : "=&r"(hi), "=&r"(lo), "=&r"(tmp));
+    __asm__ __volatile__("1:\n"
+                         "rdtimeh %0\n"
+                         "rdtime %1\n"
+                         "rdtimeh %2\n"
+                         "bne %0, %2, 1b"
+                         : "=&r"(hi), "=&r"(lo), "=&r"(tmp));
     return ((uint64_t)hi << 32) | lo;
 #endif
 }
-
 
 // Hardcode timebase
 static uint64_t timebase = 100000;

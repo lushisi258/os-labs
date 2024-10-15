@@ -1,0 +1,4 @@
+# 忽略log和txt类型的文件
+*.txt
+*.log
+!CMakeLists.txt
