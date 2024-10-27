@@ -8,12 +8,14 @@ static free_area_t free_area;
 #define free_list (free_area.free_list)
 #define nr_free (free_area.nr_free)
 
+// 初始化列表和空闲页数
 static void
 best_fit_init(void) {
     list_init(&free_list);
     nr_free = 0;
 }
 
+// 初始化内存映射
 static void
 best_fit_init_memmap(struct Page *base, size_t n) {
     assert(n > 0);
@@ -42,6 +44,7 @@ best_fit_init_memmap(struct Page *base, size_t n) {
     }
 }
 
+// 寻找最佳适配的页
 static struct Page *
 best_fit_alloc_pages(size_t n) {
     assert(n > 0);
@@ -73,6 +76,7 @@ best_fit_alloc_pages(size_t n) {
     return best_page;
 }
 
+// 释放页
 static void
 best_fit_free_pages(struct Page *base, size_t n) {
     assert(n > 0);
@@ -123,6 +127,7 @@ best_fit_free_pages(struct Page *base, size_t n) {
     }
 }
 
+// 返回空闲页数
 static size_t
 best_fit_nr_free_pages(void) {
     return nr_free;
