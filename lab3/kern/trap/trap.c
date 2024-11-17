@@ -5,12 +5,12 @@
 #include <kdebug.h>
 #include <memlayout.h>
 #include <mmu.h>
+#include <riscv.h>
+#include <sbi.h>
 #include <stdio.h>
 #include <swap.h>
 #include <trap.h>
 #include <vmm.h>
-#include <riscv.h>
-#include <sbi.h>
 
 #define TICK_NUM 100
 
@@ -111,9 +111,11 @@ static inline void print_pgfault(struct trapframe *tf) {
             tf->cause == CAUSE_STORE_PAGE_FAULT ? 'W' : 'R');
 }
 
+// 处理页错误
 static int pgfault_handler(struct trapframe *tf) {
     extern struct mm_struct *check_mm_struct;
     print_pgfault(tf);
+    // 调用do_pgfault函数处理页错误
     if (check_mm_struct != NULL) {
         return do_pgfault(check_mm_struct, tf->cause, tf->badvaddr);
     }
@@ -126,124 +128,123 @@ extern struct mm_struct *check_mm_struct;
 void interrupt_handler(struct trapframe *tf) {
     intptr_t cause = (tf->cause << 1) >> 1;
     switch (cause) {
-        case IRQ_U_SOFT:
-            cprintf("User software interrupt\n");
-            break;
-        case IRQ_S_SOFT:
-            cprintf("Supervisor software interrupt\n");
-            break;
-        case IRQ_H_SOFT:
-            cprintf("Hypervisor software interrupt\n");
-            break;
-        case IRQ_M_SOFT:
-            cprintf("Machine software interrupt\n");
-            break;
-        case IRQ_U_TIMER:
-            cprintf("User software interrupt\n");
-            break;
-        case IRQ_S_TIMER:
-            // "All bits besides SSIP and USIP in the sip register are
-            // read-only." -- privileged spec1.9.1, 4.1.4, p59
-            // In fact, Call sbi_set_timer will clear STIP, or you can clear it
-            // directly.
-            // clear_csr(sip, SIP_STIP);
-            clock_set_next_event();
-            if (++ticks % TICK_NUM == 0) {
-                print_ticks();
-            }
-            break;
-        case IRQ_H_TIMER:
-            cprintf("Hypervisor software interrupt\n");
-            break;
-        case IRQ_M_TIMER:
-            cprintf("Machine software interrupt\n");
-            break;
-        case IRQ_U_EXT:
-            cprintf("User software interrupt\n");
-            break;
-        case IRQ_S_EXT:
-            cprintf("Supervisor external interrupt\n");
-            break;
-        case IRQ_H_EXT:
-            cprintf("Hypervisor software interrupt\n");
-            break;
-        case IRQ_M_EXT:
-            cprintf("Machine software interrupt\n");
-            break;
-        default:
-            print_trapframe(tf);
-            break;
+    case IRQ_U_SOFT:
+        cprintf("User software interrupt\n");
+        break;
+    case IRQ_S_SOFT:
+        cprintf("Supervisor software interrupt\n");
+        break;
+    case IRQ_H_SOFT:
+        cprintf("Hypervisor software interrupt\n");
+        break;
+    case IRQ_M_SOFT:
+        cprintf("Machine software interrupt\n");
+        break;
+    case IRQ_U_TIMER:
+        cprintf("User software interrupt\n");
+        break;
+    case IRQ_S_TIMER:
+        // "All bits besides SSIP and USIP in the sip register are
+        // read-only." -- privileged spec1.9.1, 4.1.4, p59
+        // In fact, Call sbi_set_timer will clear STIP, or you can clear it
+        // directly.
+        // clear_csr(sip, SIP_STIP);
+        clock_set_next_event();
+        if (++ticks % TICK_NUM == 0) {
+            print_ticks();
+        }
+        break;
+    case IRQ_H_TIMER:
+        cprintf("Hypervisor software interrupt\n");
+        break;
+    case IRQ_M_TIMER:
+        cprintf("Machine software interrupt\n");
+        break;
+    case IRQ_U_EXT:
+        cprintf("User software interrupt\n");
+        break;
+    case IRQ_S_EXT:
+        cprintf("Supervisor external interrupt\n");
+        break;
+    case IRQ_H_EXT:
+        cprintf("Hypervisor software interrupt\n");
+        break;
+    case IRQ_M_EXT:
+        cprintf("Machine software interrupt\n");
+        break;
+    default:
+        print_trapframe(tf);
+        break;
     }
 }
-
 
 void exception_handler(struct trapframe *tf) {
     int ret;
     switch (tf->cause) {
-        case CAUSE_MISALIGNED_FETCH:
-            cprintf("Instruction address misaligned\n");
-            break;
-        case CAUSE_FETCH_ACCESS:
-            cprintf("Instruction access fault\n");
-            break;
-        case CAUSE_ILLEGAL_INSTRUCTION:
-            cprintf("Illegal instruction\n");
-            break;
-        case CAUSE_BREAKPOINT:
-            cprintf("Breakpoint\n");
-            break;
-        case CAUSE_MISALIGNED_LOAD:
-            cprintf("Load address misaligned\n");
-            break;
-        case CAUSE_LOAD_ACCESS:
-            cprintf("Load access fault\n");
-            if ((ret = pgfault_handler(tf)) != 0) {
-                print_trapframe(tf);
-                panic("handle pgfault failed. %e\n", ret);
-            }
-            break;
-        case CAUSE_MISALIGNED_STORE:
-            cprintf("AMO address misaligned\n");
-            break;
-        case CAUSE_STORE_ACCESS:
-            cprintf("Store/AMO access fault\n");
-            if ((ret = pgfault_handler(tf)) != 0) {
-                print_trapframe(tf);
-                panic("handle pgfault failed. %e\n", ret);
-            }
-            break;
-        case CAUSE_USER_ECALL:
-            cprintf("Environment call from U-mode\n");
-            break;
-        case CAUSE_SUPERVISOR_ECALL:
-            cprintf("Environment call from S-mode\n");
-            break;
-        case CAUSE_HYPERVISOR_ECALL:
-            cprintf("Environment call from H-mode\n");
-            break;
-        case CAUSE_MACHINE_ECALL:
-            cprintf("Environment call from M-mode\n");
-            break;
-        case CAUSE_FETCH_PAGE_FAULT:
-            cprintf("Instruction page fault\n");
-            break;
-        case CAUSE_LOAD_PAGE_FAULT:
-            cprintf("Load page fault\n");
-            if ((ret = pgfault_handler(tf)) != 0) {
-                print_trapframe(tf);
-                panic("handle pgfault failed. %e\n", ret);
-            }
-            break;
-        case CAUSE_STORE_PAGE_FAULT:
-            cprintf("Store/AMO page fault\n");
-            if ((ret = pgfault_handler(tf)) != 0) {
-                print_trapframe(tf);
-                panic("handle pgfault failed. %e\n", ret);
-            }
-            break;
-        default:
+    case CAUSE_MISALIGNED_FETCH:
+        cprintf("Instruction address misaligned\n");
+        break;
+    case CAUSE_FETCH_ACCESS:
+        cprintf("Instruction access fault\n");
+        break;
+    case CAUSE_ILLEGAL_INSTRUCTION:
+        cprintf("Illegal instruction\n");
+        break;
+    case CAUSE_BREAKPOINT:
+        cprintf("Breakpoint\n");
+        break;
+    case CAUSE_MISALIGNED_LOAD:
+        cprintf("Load address misaligned\n");
+        break;
+    case CAUSE_LOAD_ACCESS:
+        cprintf("Load access fault\n");
+        if ((ret = pgfault_handler(tf)) != 0) {
             print_trapframe(tf);
-            break;
+            panic("handle pgfault failed. %e\n", ret);
+        }
+        break;
+    case CAUSE_MISALIGNED_STORE:
+        cprintf("AMO address misaligned\n");
+        break;
+    case CAUSE_STORE_ACCESS:
+        cprintf("Store/AMO access fault\n");
+        if ((ret = pgfault_handler(tf)) != 0) {
+            print_trapframe(tf);
+            panic("handle pgfault failed. %e\n", ret);
+        }
+        break;
+    case CAUSE_USER_ECALL:
+        cprintf("Environment call from U-mode\n");
+        break;
+    case CAUSE_SUPERVISOR_ECALL:
+        cprintf("Environment call from S-mode\n");
+        break;
+    case CAUSE_HYPERVISOR_ECALL:
+        cprintf("Environment call from H-mode\n");
+        break;
+    case CAUSE_MACHINE_ECALL:
+        cprintf("Environment call from M-mode\n");
+        break;
+    case CAUSE_FETCH_PAGE_FAULT:
+        cprintf("Instruction page fault\n");
+        break;
+    case CAUSE_LOAD_PAGE_FAULT:
+        cprintf("Load page fault\n");
+        if ((ret = pgfault_handler(tf)) != 0) {
+            print_trapframe(tf);
+            panic("handle pgfault failed. %e\n", ret);
+        }
+        break;
+    case CAUSE_STORE_PAGE_FAULT:
+        cprintf("Store/AMO page fault\n");
+        if ((ret = pgfault_handler(tf)) != 0) {
+            print_trapframe(tf);
+            panic("handle pgfault failed. %e\n", ret);
+        }
+        break;
+    default:
+        print_trapframe(tf);
+        break;
     }
 }
 
