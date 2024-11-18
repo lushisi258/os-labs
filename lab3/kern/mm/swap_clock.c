@@ -36,7 +36,7 @@ list_entry_t pra_list_head, *curr_ptr;
  * access FIFO PRA
  */
 static int _clock_init_mm(struct mm_struct *mm) {
-    /*LAB3 EXERCISE 4: YOUR CODE*/
+    /*LAB3 EXERCISE 4: 2213601*/
     // 初始化pra_list_head为空链表
     // 初始化当前指针curr_ptr指向pra_list_head，表示当前页面替换位置为链表头
     // 将mm的私有成员指针指向pra_list_head，用于后续的页面替换算法操作
@@ -61,7 +61,7 @@ static int _clock_map_swappable(struct mm_struct *mm, uintptr_t addr,
 
     assert(entry != NULL && curr_ptr != NULL);
     // record the page access situlation
-    /*LAB3 EXERCISE 4: YOUR CODE*/
+    /*LAB3 EXERCISE 4: 2213601*/
     // link the most recent arrival page at the back of the pra_list_head
     // qeueue. 将页面page插入到页面链表pra_list_head的末尾
     // 将页面的visited标志置为1，表示该页面已被访问
@@ -89,7 +89,7 @@ static int _clock_swap_out_victim(struct mm_struct *mm, struct Page **ptr_page,
     //(1)  unlink the  earliest arrival page in front of pra_list_head qeueue
     //(2)  set the addr of addr of this page to ptr_page
     while (1) {
-        /*LAB3 EXERCISE 4: YOUR CODE*/
+        /*LAB3 EXERCISE 4: 2213601*/
         // 编写代码
         // 遍历页面链表pra_list_head，查找最早未被访问的页面
         // 获取当前页面对应的Page结构指针
@@ -190,18 +190,10 @@ static int _clock_check_swap(void) {
 static int _clock_init(void) { return 0; }
 
 static int _clock_set_unswappable(struct mm_struct *mm, uintptr_t addr) {
-    // 该函数未使用参数，添加(void)以避免编译警告
-    (void)mm;
-    (void)addr;
-
     return 0;
 }
 
-static int _clock_tick_event(
-    struct mm_struct *mm) { // 该函数未使用参数，添加(void)以避免编译警告
-    (void)mm;
-    return 0;
-}
+static int _clock_tick_event(struct mm_struct *mm) { return 0; }
 
 struct swap_manager swap_manager_clock = {
     .name = "clock swap manager",
