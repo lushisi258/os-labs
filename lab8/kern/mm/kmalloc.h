@@ -7,6 +7,7 @@
 
 void kmalloc_init(void);
 
+// 内存分配函数
 void *kmalloc(size_t n);
 void kfree(void *objp);
 

@@ -41,30 +41,30 @@ extern list_entry_t proc_list;
 struct inode;
 
 struct proc_struct {
-    enum proc_state state;                      // Process state
-    int pid;                                    // Process ID
-    int runs;                                   // the running times of Proces
-    uintptr_t kstack;                           // Process kernel stack
-    volatile bool need_resched;                 // bool value: need to be rescheduled to release CPU?
-    struct proc_struct *parent;                 // the parent process
-    struct mm_struct *mm;                       // Process's memory management field
-    struct context context;                     // Switch here to run process
-    struct trapframe *tf;                       // Trap frame for current interrupt
-    uintptr_t cr3;                              // CR3 register: the base addr of Page Directroy Table(PDT)
-    uint32_t flags;                             // Process flag
-    char name[PROC_NAME_LEN + 1];               // Process name
-    list_entry_t list_link;                     // Process link list 
-    list_entry_t hash_link;                     // Process hash list
-    int exit_code;                              // exit code (be sent to parent proc)
-    uint32_t wait_state;                        // waiting state
-    struct proc_struct *cptr, *yptr, *optr;     // relations between processes
-    struct run_queue *rq;                       // running queue contains Process
-    list_entry_t run_link;                      // the entry linked in run queue
-    int time_slice;                             // time slice for occupying the CPU
-    skew_heap_entry_t lab6_run_pool;            // FOR LAB6 ONLY: the entry in the run pool
-    uint32_t lab6_stride;                       // FOR LAB6 ONLY: the current stride of the process
-    uint32_t lab6_priority;                     // FOR LAB6 ONLY: the priority of process, set by lab6_set_priority(uint32_t)
-    struct files_struct *filesp;                // the file related info(pwd, files_count, files_array, fs_semaphore) of process
+    enum proc_state state;                      // Process state，进程状态
+    int pid;                                    // Process ID，进程ID
+    int runs;                                   // the running times of Proces，进程运行次数
+    uintptr_t kstack;                           // Process kernel stack，进程内核栈
+    volatile bool need_resched;                 // bool value: need to be rescheduled to release CPU?，是否需要重新调度
+    struct proc_struct *parent;                 // the parent process，父进程
+    struct mm_struct *mm;                       // Process's memory management field，进程的内存管理结构
+    struct context context;                     // Switch here to run process，进程上下文
+    struct trapframe *tf;                       // Trap frame for current interrupt，当前中断的中断帧
+    uintptr_t cr3;                              // CR3 register: the base addr of Page Directroy Table(PDT)，CR3寄存器：页目录表的基地址
+    uint32_t flags;                             // Process flag，进程标志
+    char name[PROC_NAME_LEN + 1];               // Process name，进程名
+    list_entry_t list_link;                     // Process link list ，进程链表
+    list_entry_t hash_link;                     // Process hash list，进程哈希链表
+    int exit_code;                              // exit code (be sent to parent proc)，退出码(发送给父进程)
+    uint32_t wait_state;                        // waiting state，等待状态
+    struct proc_struct *cptr, *yptr, *optr;     // relations between processes，进程间的关系
+    struct run_queue *rq;                       // running queue contains Process，运行队列包含进程
+    list_entry_t run_link;                      // the entry linked in run queue，链接到运行队列的条目
+    int time_slice;                             // time slice for occupying the CPU，占用CPU的时间片
+    skew_heap_entry_t lab6_run_pool;            // FOR LAB6 ONLY: the entry in the run pool，仅用于LAB6：运行池中的条目
+    uint32_t lab6_stride;                       // FOR LAB6 ONLY: the current stride of the process，仅用于LAB6：进程的当前步幅
+    uint32_t lab6_priority;                     // FOR LAB6 ONLY: the priority of process, set by lab6_set_priority(uint32_t)，仅用于LAB6：进程的优先级，由lab6_set_priority(uint32_t)设置
+    struct files_struct *filesp;                // the file related info(pwd, files_count, files_array, fs_semaphore) of process，进程的文件相关信息(pwd, files_count, files_array, fs_semaphore)
 };
 
 #define PF_EXITING                  0x00000001      // getting shutdown
